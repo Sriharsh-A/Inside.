@@ -6,13 +6,28 @@ export default function Onboarding({ onComplete, onBack }) {
     name: '', email: '', password: '', 
     height: '', weight: '', age: '',
     gender: 'male', activityLevel: 'moderate', dietPreference: 'non-veg',
-    duration: 30 // 👈 Default to 1 Month
+    duration: 30,
+    restrictedDays: [] // 👈 Stores selected days like ['Tuesday', 'Thursday']
   });
   const [loading, setLoading] = useState(false);
+
+  // Toggle day selection
+  const toggleDay = (day) => {
+    setFormData(prev => {
+      const days = prev.restrictedDays.includes(day)
+        ? prev.restrictedDays.filter(d => d !== day) // Remove if exists
+        : [...prev.restrictedDays, day]; // Add if not
+      return { ...prev, restrictedDays: days };
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    
+    // Convert array to comma-separated string for backend (e.g., "Tuesday,Thursday")
+    const restrictedFoodDays = formData.restrictedDays.join(',');
+
     try {
       const response = await fetch('http://localhost:3000/onboard', {
         method: 'POST',
@@ -21,7 +36,8 @@ export default function Onboarding({ onComplete, onBack }) {
           ...formData,
           height: Number(formData.height),
           weight: Number(formData.weight),
-          age: Number(formData.age)
+          age: Number(formData.age),
+          restrictedFoodDays // 👈 Send this string
         }),
       });
       
@@ -48,6 +64,7 @@ export default function Onboarding({ onComplete, onBack }) {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* BASIC INFO */}
           <div className="space-y-1">
             <label className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Email</label>
             <input required type="email" placeholder="you@example.com" className="w-full p-4 bg-gray-50 dark:bg-zinc-900 border-0 rounded-2xl text-gray-900 dark:text-white font-semibold focus:ring-2 focus:ring-accent transition-all"
@@ -66,6 +83,7 @@ export default function Onboarding({ onComplete, onBack }) {
               onChange={e => setFormData({...formData, name: e.target.value})} />
           </div>
 
+          {/* METRICS */}
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-1">
               <label className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Height (cm)</label>
@@ -84,7 +102,7 @@ export default function Onboarding({ onComplete, onBack }) {
             </div>
           </div>
 
-          {/* DURATION SELECTOR (NEW) */}
+          {/* DURATION SELECTOR */}
           <div className="space-y-1">
             <label className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Goal Duration</label>
             <div className="grid grid-cols-3 gap-2">
@@ -111,7 +129,7 @@ export default function Onboarding({ onComplete, onBack }) {
           </div>
 
           {/* DIET PREFERENCE */}
-          <div className="space-y-1">
+          <div className="space-y-3">
             <label className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Diet Preference</label>
             <div className="grid grid-cols-3 gap-2">
               {['veg', 'non-veg', 'vegan'].map((diet) => (
@@ -125,6 +143,29 @@ export default function Onboarding({ onComplete, onBack }) {
                 </button>
               ))}
             </div>
+
+            {/* RESTRICTED DAYS SELECTOR (Only shows if Non-Veg is selected) */}
+            {formData.dietPreference === 'non-veg' && (
+              <div className="bg-gray-50 dark:bg-zinc-900 p-4 rounded-2xl border border-gray-100 dark:border-zinc-800 animate-in fade-in slide-in-from-top-4">
+                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider block mb-3">I eat Veg only on these days:</label>
+                <div className="flex flex-wrap gap-2">
+                  {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => (
+                    <button
+                      key={day}
+                      type="button"
+                      onClick={() => toggleDay(day)}
+                      className={`px-3 py-2 rounded-xl text-xs font-bold transition-all border ${
+                        formData.restrictedDays.includes(day)
+                        ? 'bg-accent border-accent text-white shadow-lg shadow-accent/20'
+                        : 'bg-white dark:bg-zinc-950 border-gray-200 dark:border-zinc-800 text-zinc-500 hover:border-gray-300 dark:hover:border-zinc-700'
+                      }`}
+                    >
+                      {day.slice(0, 3)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="space-y-1">
