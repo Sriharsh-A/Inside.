@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Activity, Shield, Zap, Moon, Sun, LayoutGrid } from 'lucide-react';
+import { ArrowRight, Activity, Shield, Zap, Moon, Sun, LayoutGrid, Parentheses } from 'lucide-react';
 import { useTheme } from './ThemeContext';
 
 export default function Landing({ onStart }) {
@@ -12,7 +12,7 @@ export default function Landing({ onStart }) {
       <nav className="fixed top-0 w-full bg-white/90 dark:bg-black/90 backdrop-blur-xl z-50 px-6 py-4 flex justify-between items-center border-b border-gray-100 dark:border-zinc-900">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-black dark:bg-white rounded flex items-center justify-center text-white dark:text-black">
-            <LayoutGrid size={18} />
+            <Parentheses size={18} />
           </div>
           <span className="font-bold text-lg tracking-tight">Inside.</span>
         </div>
@@ -54,7 +54,7 @@ export default function Landing({ onStart }) {
             { icon: Activity, title: "REGULATION", text: "Workouts that adapt automatically." },
             { icon: Shield, title: "ZERO FRICTION", text: "No ads. No feed. Just data." }
           ].map((feature, i) => (
-            <div key={i} className="p-8 rounded-none border-l-2 border-zinc-100 dark:border-zinc-900 hover:border-accent transition-colors">
+            <div key={i} className="p-8 rounded-none border-l-2 border-zinc-100 dark:border-zinc-900 hover:border-accent hover:dark:border-accent transition-colors">
               <feature.icon size={24} className="mb-4 text-zinc-400 dark:text-zinc-600" />
               <h3 className="text-sm font-bold mb-2 text-black dark:text-white uppercase tracking-wider">{feature.title}</h3>
               <p className="text-zinc-500 text-sm leading-relaxed">
@@ -66,7 +66,7 @@ export default function Landing({ onStart }) {
       </main>
 
       <footer className="py-12 text-center text-zinc-600 text-dark:accent text-xs uppercase tracking-widest">
-        © 2026 Inside. Built for yourself.
+        © 2026 Inside. Built for you.
       </footer>
     </div>
   );
