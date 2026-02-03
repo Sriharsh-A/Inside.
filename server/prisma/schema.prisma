@@ -1,44 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
-  // REPLACE [YOUR-PASSWORD] below with your real password!
-  url      = "postgresql://postgres.gtxauotdppvozygzbwjl:Minimalist_Guy2710@aws-1-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true" 
+  url      = env("DATABASE_URL")
 }
 
-// Keep your models the same, but let's add the 'calories' target to User
 model User {
-  id             String   @id @default(uuid())
-  name           String
-  height         Float
-  weight         Float
-  age            Int
-  gender         String
-  activityLevel  String
-  dietPreference String
-  calorieTarget  Int      @default(2000) // NEW: Stores their daily target
-  createdAt      DateTime @default(now())
-  cycles         Cycle[]
-  logs           DailyLog[]
+  id                 String     @id @default(uuid())
+  name               String
+  email              String     @unique
+  password           String
+  height             Float
+  weight             Float
+  age                Int
+  gender             String
+  activityLevel      String
+  dietPreference     String
+  calorieTarget      Int        @default(2000)
+  restrictedFoodDays String?    @default("")
+  workoutPreference  String?    @default("gym")
+  createdAt          DateTime   @default(now())
+  cycles             Cycle[]
+  dailyLogs          DailyLog[]
 }
 
-// ... Keep Cycle and DailyLog models exactly as they were ...
 model Cycle {
   id        String   @id @default(uuid())
   userId    String
   startDate DateTime @default(now())
   endDate   DateTime
   goal      String
-  schedule  String   // JSON
+  schedule  String   // Stores JSON string of workout plan
   isActive  Boolean  @default(true)
+  duration  Int      @default(30)
   user      User     @relation(fields: [userId], references: [id])
 }
 
 model DailyLog {
-  id           String   @id @default(uuid())
-  userId       String
-  date         DateTime @default(now())
-  workoutDone  Boolean  @default(false)
-  dietFollowed Boolean  @default(false)
-  steps        Int      @default(0)
-  dietCost     Float    @default(0)
-  user         User     @relation(fields: [userId], references: [id])
+  id               String   @id @default(uuid())
+  userId           String
+  date             DateTime @default(now())
+  workoutDone      Boolean  @default(false)
+  dietFollowed     Boolean  @default(false)
+  steps            Int      @default(0)
+  dietCost         Float    @default(0)
+  currentWeight    Float?   @default(0)
+  caloriesConsumed Int      @default(0)
+  proteinConsumed  Int      @default(0)
+  user             User     @relation(fields: [userId], references: [id])
+  meals            Meal[]
+}
+
+model Meal {
+  id         String   @id @default(uuid())
+  dailyLogId String
+  name       String
+  calories   Int
+  protein    Int
+  timestamp  DateTime @default(now())
+  dailyLog   DailyLog @relation(fields: [dailyLogId], references: [id], onDelete: Cascade)
 }

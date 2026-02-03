@@ -1,22 +1,23 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Parentheses, ChevronRight } from 'lucide-react'; 
+import { ArrowLeft, Parentheses, ChevronRight, Home, Dumbbell } from 'lucide-react'; 
 
 export default function Onboarding({ onComplete, onBack }) {
   const [formData, setFormData] = useState({
     name: '', email: '', password: '', 
     height: '', weight: '', age: '',
-    gender: 'male', activityLevel: 'moderate', dietPreference: 'non-veg',
+    gender: 'male', // Default
+    activityLevel: 'moderate', dietPreference: 'non-veg',
+    workoutPreference: 'gym',
     duration: 30,
-    restrictedDays: [] // 👈 Stores selected days like ['Tuesday', 'Thursday']
+    restrictedDays: []
   });
   const [loading, setLoading] = useState(false);
 
-  // Toggle day selection
   const toggleDay = (day) => {
     setFormData(prev => {
       const days = prev.restrictedDays.includes(day)
-        ? prev.restrictedDays.filter(d => d !== day) // Remove if exists
-        : [...prev.restrictedDays, day]; // Add if not
+        ? prev.restrictedDays.filter(d => d !== day)
+        : [...prev.restrictedDays, day];
       return { ...prev, restrictedDays: days };
     });
   };
@@ -25,7 +26,6 @@ export default function Onboarding({ onComplete, onBack }) {
     e.preventDefault();
     setLoading(true);
     
-    // Convert array to comma-separated string for backend (e.g., "Tuesday,Thursday")
     const restrictedFoodDays = formData.restrictedDays.join(',');
 
     try {
@@ -37,7 +37,7 @@ export default function Onboarding({ onComplete, onBack }) {
           height: Number(formData.height),
           weight: Number(formData.weight),
           age: Number(formData.age),
-          restrictedFoodDays // 👈 Send this string
+          restrictedFoodDays
         }),
       });
       
@@ -83,6 +83,27 @@ export default function Onboarding({ onComplete, onBack }) {
               onChange={e => setFormData({...formData, name: e.target.value})} />
           </div>
 
+          {/* GENDER SELECTION (NEW) */}
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Gender</label>
+            <div className="grid grid-cols-2 gap-2">
+              {['male', 'female'].map((g) => (
+                <button
+                  key={g}
+                  type="button"
+                  onClick={() => setFormData({...formData, gender: g})}
+                  className={`p-3 rounded-xl text-sm font-semibold capitalize border-2 transition-all ${
+                    formData.gender === g
+                    ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
+                    : 'border-transparent bg-gray-50 text-gray-500 hover:bg-gray-100 dark:bg-zinc-900 dark:text-gray-400 dark:hover:bg-zinc-800'
+                  }`}
+                >
+                  {g}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* METRICS */}
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-1">
@@ -99,6 +120,31 @@ export default function Onboarding({ onComplete, onBack }) {
               <label className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Age</label>
               <input required type="number" placeholder="25" className="w-full p-4 bg-gray-50 dark:bg-zinc-900 border-0 rounded-2xl text-gray-900 dark:text-white font-semibold focus:ring-2 focus:ring-black dark:focus:ring-white transition-all"
                 onChange={e => setFormData({...formData, age: e.target.value})} />
+            </div>
+          </div>
+
+          {/* WORKOUT SETTING */}
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Workout Setting</label>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { label: 'Gym', val: 'gym', icon: Dumbbell }, 
+                { label: 'Home', val: 'home', icon: Home }, 
+              ].map((opt) => (
+                <button
+                  key={opt.val}
+                  type="button"
+                  onClick={() => setFormData({...formData, workoutPreference: opt.val})}
+                  className={`p-4 rounded-xl text-sm font-bold border-2 transition-all flex items-center justify-center gap-3 ${
+                    formData.workoutPreference === opt.val
+                    ? 'border-accent text-accent bg-accent/5' 
+                    : 'border-transparent bg-gray-50 text-gray-500 hover:bg-gray-100 dark:bg-zinc-900 dark:text-gray-400 dark:hover:bg-zinc-800'
+                  }`}
+                >
+                  <opt.icon size={18} />
+                  <span>{opt.label} Workout</span>
+                </button>
+              ))}
             </div>
           </div>
 
@@ -143,8 +189,6 @@ export default function Onboarding({ onComplete, onBack }) {
                 </button>
               ))}
             </div>
-
-            {/* RESTRICTED DAYS SELECTOR (Only shows if Non-Veg is selected) */}
             {formData.dietPreference === 'non-veg' && (
               <div className="bg-gray-50 dark:bg-zinc-900 p-4 rounded-2xl border border-gray-100 dark:border-zinc-800 animate-in fade-in slide-in-from-top-4">
                 <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider block mb-3">I eat Veg only on these days:</label>
