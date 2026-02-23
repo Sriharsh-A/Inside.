@@ -94,7 +94,7 @@ export default function App() {
   // --- 2. SMART DATA FETCHING ---
   const refreshData = useCallback(() => {
     if (user && cycle) {
-      fetch(`http://localhost:3000/today/${user.id}`)
+      fetch(`https://inside-api-jwkw.onrender.com/today/${user.id}`)
         .then(res => res.json())
         .then(res => { 
           setData(res); 
@@ -149,7 +149,7 @@ export default function App() {
         return { ...prev, stats: newStats };
       });
     }
-    await fetch('http://localhost:3000/log', {
+    await fetch('https://inside-api-jwkw.onrender.com/log', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId: user.id, type, value })
@@ -175,7 +175,7 @@ export default function App() {
     }
 
     try {
-      const res = await fetch('http://localhost:3000/add-meal', {
+      const res = await fetch('https://inside-api-jwkw.onrender.com/add-meal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user.id, ...mealData })
@@ -510,7 +510,7 @@ export default function App() {
       setIsTyping(true);
 
       try {
-        const res = await fetch('http://localhost:3000/chat', {
+        const res = await fetch('https://inside-api-jwkw.onrender.com/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message: userText })

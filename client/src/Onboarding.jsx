@@ -29,7 +29,7 @@ export default function Onboarding({ onComplete, onBack }) {
     const restrictedFoodDays = formData.restrictedDays.join(',');
 
     try {
-      const response = await fetch('http://localhost:3000/onboard', {
+      const response = await fetch('https://inside-api-jwkw.onrender.com/onboard', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
