@@ -80,7 +80,7 @@ export default function App() {
   useEffect(() => {
     const savedId = localStorage.getItem('userId');
     if (savedId) {
-      fetch(`http://localhost:3000/user/${savedId}`)
+      fetch(`https://inside-api-jwkw.onrender.com/user/${savedId}`)
         .then(res => res.json())
         .then(res => {
           if (res.user) { setUser(res.user); setCycle(res.cycle); setShowLanding(false); }
